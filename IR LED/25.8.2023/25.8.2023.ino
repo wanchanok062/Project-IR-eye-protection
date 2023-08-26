@@ -39,7 +39,7 @@ void setup() {
 
 void loop() {
   // sendIRCode();
-  // int16_t ax, ay, az;
+  int16_t ax, ay, az;
   int16_t gx, gy, gz;
 
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
