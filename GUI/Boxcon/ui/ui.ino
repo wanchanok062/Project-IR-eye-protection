@@ -1,45 +1,28 @@
-// ##### import library #####
-#include <lvgl.h>             //this library used for create display TFT.
-#include <TFT_eSPI.h>         //this library for PSI Port.
-#include <ui.h>               //this library used for create display GUI.
-#include <IRremoteESP8266.h>  //this library used for recive IR.
-#include <IRrecv.h>           //this library used for recive IR.
-#include <IRutils.h>          //this library used for recive IR.
-#include <WiFiManager.h>      //this library used for manage WIFI.
-#include <WiFi.h>             //this library used for manage WIFI.
-#include <HTTPClient.h>       // this library used for HTTP protocol.
-#include <ArduinoJson.h>      // this library used for Json.
-#include "time.h"             // this library used for time.
+// ----- import library -----
+#include <lvgl.h>  //this library used for create display TFT.
+#include <TFT_eSPI.h> //this library for PSI Port.
+#include <ui.h> //this library used for create display GUI.
+#include <IRremoteESP8266.h> //this library used for recive IR.
+#include <IRrecv.h> //this library used for recive IR.
+#include <IRutils.h> //this library used for recive IR.
+#include <WiFiManager.h> //this library used for manage WIFI.
+#include <WiFi.h> //this library used for manage WIFI.
+#include <HTTPClient.h>// this library used for HTTP protocol.
+#include <ArduinoJson.h>// this library used for Json.
+#include "time.h"// this library used for time.
 
-//##### variable #####
+//----- variable -----
 
 //----- IR -----
-const uint16_t kRecvPin = 14;  // GPIO 4 (D2) For recive IR
-#define Relay1 21 // GPIO 21  For Output relay
+const uint16_t kRecvPin = 14;  // GPIO 4 (D2) สำหรับรับสัญญาณ IR
+#define Relay1 21
 IRrecv irrecv(kRecvPin);
-unsigned long lastIRTime = 0;
-const unsigned long relayDelay = 15000;  //time delay 15s
 //----- End IR -----
-
-//----- TFT State Count -----
 int stateCountsown = 0;
 int counDown = 15;
-static const uint16_t screenWidth = 320;
-static const uint16_t screenHeight = 240;
-
-static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf[screenWidth * screenHeight / 10];
-
-TFT_eSPI tft = TFT_eSPI(screenWidth, screenHeight); /* TFT instance */
-//----- End TFT State Count -----
-
-//----- Wifi manager ----- 
-
 bool buttonPressed = false;  //button for reset wifi manager
 WiFiManager wm;
-const int buttonPin = 22;  // declare pin for connect button
-
-//----- END Wifi manager ----- 
+const int buttonPin = 22;      // ตั้งค่าขาของปุ่มที่คุณใช้
 
 // -------- Time get ---------
 HTTPClient http;
@@ -53,7 +36,7 @@ const int daylightOffset_sec = 0;
 struct tm previousTimeinfo;  // Stroe Time Befor
 bool timeChanged = false;
 char timeth[20];
-/*-------- end ----------*/
+//-------- end ---------------
 
 //------------- function time get -------------
 void printLocalTime() {
@@ -75,6 +58,19 @@ void printLocalTime() {
 }
 // ------------- end -------------
 
+unsigned long lastIRTime = 0;
+const unsigned long relayDelay = 15000;
+
+/*Don't forget to set Sketchbook location in File/Preferencesto the path of your UI project (the parent foder of this INO file)*/
+
+/*Change to your screen resolution*/
+static const uint16_t screenWidth = 320;
+static const uint16_t screenHeight = 240;
+
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf[screenWidth * screenHeight / 10];
+
+TFT_eSPI tft = TFT_eSPI(screenWidth, screenHeight); /* TFT instance */
 
 #if LV_USE_LOG != 0
 /* Serial debugging */
@@ -97,20 +93,25 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
   lv_disp_flush_ready(disp);
 }
 
-void setup() {
-  
-  static lv_disp_drv_t disp_drv; /*Initialize the display*/
-  lv_disp_drv_init(&disp_drv);
 
+
+
+void setup() {
+  /*Initialize the display*/
+  static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+  
   Serial.begin(115200); /* prepare for possible serial debug */
-  pinMode(buttonPin, INPUT_PULLUP); //declare pin INPUT_PULLUP 1 -> 0
-  irrecv.enableIRIn();  // Activate the receiver IR
-  pinMode(Ralay1, OUTPUT); //declare pin for output relay
+  pinMode(buttonPin, INPUT_PULLUP);
+  irrecv.enableIRIn();  // เปิดใช้งานรับสัญญาณ IR
+  pinMode(Relay1, OUTPUT);
   String LVGL_Arduino = "Hello Arduino! ";
   LVGL_Arduino += String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
 
   Serial.println(LVGL_Arduino);
   Serial.println("I am LVGL_Arduino");
+
+  lv_init();
 
 #if LV_USE_LOG != 0
   lv_log_register_print_cb(my_print); /* register print function for debugging */
@@ -118,10 +119,11 @@ void setup() {
 
   tft.begin();        /* TFT init */
   tft.setRotation(3); /* Landscape orientation, flipped */
+
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, screenWidth * screenHeight / 10);
-  
+
   /*Change the following line to your display resolution*/
-  disp_drv.hor_res = screenWidth; 
+  disp_drv.hor_res = screenWidth;
   disp_drv.ver_res = screenHeight;
   disp_drv.flush_cb = my_disp_flush;
   disp_drv.draw_buf = &draw_buf;
@@ -132,7 +134,6 @@ void setup() {
   lv_indev_drv_init(&indev_drv);
   indev_drv.type = LV_INDEV_TYPE_POINTER;
   lv_indev_drv_register(&indev_drv);
- 
   //----- wifi manager -----
   bool res;
   res = wm.autoConnect("CED_Connect", "CED_config-01");
@@ -149,11 +150,8 @@ void setup() {
   printLocalTime();
   // ----- end get the time -----
 
-  //------- init -------
-  lv_init();
   ui_init();
   Serial.println("Setup done");
-   //----- End init -----
 }
 
 void loop() {
@@ -162,7 +160,7 @@ void loop() {
   if (irrecv.decode(&results)) {  // รับสัญญาณ IR และถอดรหัส
 
     if (results.value == 0x12345678) {
-      digitalWrite(Ralay1, HIGH);  // เปิดรีเลย์
+      digitalWrite(Relay1, HIGH);  // เปิดรีเลย์
       Serial.println("Relay ON");
       lv_label_set_text(ui_setStatus, "ON");
       lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0x0FD10E), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -192,7 +190,7 @@ void loop() {
 
         if (counDown <= 0) {
           lv_bar_set_value(ui_BarState, 0, LV_ANIM_OFF);
-          digitalWrite(Ralay1, LOW);
+          digitalWrite(Relay1, LOW);
           Serial.println("Relay : OFF");
           lv_label_set_text(ui_setStatus, "OFF");
           lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
