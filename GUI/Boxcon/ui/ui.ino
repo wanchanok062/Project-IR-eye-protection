@@ -15,7 +15,7 @@
 
 //----- IR -----
 const uint16_t kRecvPin = 14;  // GPIO 4 (D2) สำหรับรับสัญญาณ IR
-#define Ralay1 21
+#define Relay1 21
 IRrecv irrecv(kRecvPin);
 //----- End IR -----
 int stateCountsown = 0;
@@ -104,7 +104,7 @@ void setup() {
   Serial.begin(115200); /* prepare for possible serial debug */
   pinMode(buttonPin, INPUT_PULLUP);
   irrecv.enableIRIn();  // เปิดใช้งานรับสัญญาณ IR
-  pinMode(Ralay1, OUTPUT);
+  pinMode(Relay1, OUTPUT);
   String LVGL_Arduino = "Hello Arduino! ";
   LVGL_Arduino += String('V') + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
 
@@ -160,7 +160,7 @@ void loop() {
   if (irrecv.decode(&results)) {  // รับสัญญาณ IR และถอดรหัส
 
     if (results.value == 0x12345678) {
-      digitalWrite(Ralay1, HIGH);  // เปิดรีเลย์
+      digitalWrite(Relay1, HIGH);  // เปิดรีเลย์
       Serial.println("Relay ON");
       lv_label_set_text(ui_setStatus, "ON");
       lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0x0FD10E), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -190,7 +190,7 @@ void loop() {
 
         if (counDown <= 0) {
           lv_bar_set_value(ui_BarState, 0, LV_ANIM_OFF);
-          digitalWrite(Ralay1, LOW);
+          digitalWrite(Relay1, LOW);
           Serial.println("Relay : OFF");
           lv_label_set_text(ui_setStatus, "OFF");
           lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
