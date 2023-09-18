@@ -7,7 +7,7 @@
 IRsend irsend(IrLedPin);
 
 unsigned long previousMillis = 0;
-const long interval = 3000;  // 0.25 sec
+const long interval = 5000;  // 0.25 sec
 bool ledState = LOW;
 
 MPU6050 mpu;
@@ -17,7 +17,7 @@ void sendIRCode() {
   // ส่งรหัส IR ของตัวเองที่คุณได้รับจากการบันทึก
   // ตัวอย่าง: คำสั่งส่งรหัส IR ที่มีความยาว 32 บิต
   uint32_t customIRCode = 0x12345678;
-  delay(500);
+  delay(1500);
   irsend.sendNEC(customIRCode, 32);
 }
 
@@ -43,20 +43,22 @@ void loop() {
   int16_t gx, gy, gz;
 
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-  float accelerationX = (float)ax / 16384.0; 
 
   unsigned long currentMillis = millis();
 
-  // Serial.println(accelerationX);
-  if (accelerationX <= 0.4) {
-    digitalWrite(IrLedPin, LOW);
-  } else {
-    if (currentMillis - previousMillis >= interval) {
-      previousMillis = currentMillis;
-      ledState = !ledState;
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    ledState = !ledState;
+    float accelerationX = (float)ax / 16384.0;
+    // Serial.println(accelerationX);
+    if (accelerationX <= 0.4) {
+      digitalWrite(IrLedPin, LOW);
+    } else {
+
       // digitalWrite(IrLedPin, ledState);
+      delay(100);
       sendIRCode();  // ส่งรหัส IR เมื่อค่า accelerationX มากกว่า 0.50
-      delay(500);
+      delay(1000);
       digitalWrite(IrLedPin, LOW);
     }
   }

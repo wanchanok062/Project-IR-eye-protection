@@ -56,6 +56,11 @@ extern lv_obj_t * ui_Panel5;
 extern lv_obj_t * ui_currenticon;
 extern lv_obj_t * ui_Panel3;
 extern lv_obj_t * ui_Homeimg;
+// SCREEN: ui_Wifi_not_connect
+void ui_Wifi_not_connect_screen_init(void);
+extern lv_obj_t * ui_Wifi_not_connect;
+extern lv_obj_t * ui_Label2;
+extern lv_obj_t * ui_Label3;
 extern lv_obj_t * ui____initial_actions0;
 
 LV_IMG_DECLARE(ui_img_power_png);    // assets\power.png
@@ -72,3 +77,5 @@ void ui_init(void);
 #endif
 
 #endif
+
+

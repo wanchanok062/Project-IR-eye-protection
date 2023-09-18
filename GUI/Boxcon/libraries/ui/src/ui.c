@@ -41,6 +41,12 @@ lv_obj_t * ui_Panel5;
 lv_obj_t * ui_currenticon;
 lv_obj_t * ui_Panel3;
 lv_obj_t * ui_Homeimg;
+
+// SCREEN: ui_Wifi_not_connect
+void ui_Wifi_not_connect_screen_init(void);
+lv_obj_t * ui_Wifi_not_connect;
+lv_obj_t * ui_Label2;
+lv_obj_t * ui_Label3;
 lv_obj_t * ui____initial_actions0;
 const lv_img_dsc_t * ui_imgset_439565130[1] = {&ui_img_1810231589};
 
@@ -117,6 +123,8 @@ void ui_init(void)
     lv_disp_set_theme(dispp, theme);
     ui_Screen2_screen_init();
     ui_HOME_screen_init();
+    ui_Wifi_not_connect_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
+    // lv_disp_load_scr(ui_Wifi_not_connect);
     lv_disp_load_scr(ui_Screen2);
 }

@@ -2744,7 +2744,7 @@
                           {
                             "nid": -1659854226,
                             "strtype": "LABEL/Text",
-                            "strval": "ON",
+                            "strval": "OFF",
                             "InheritedType": 10
                           },
                           {
@@ -2759,9 +2759,9 @@
                                     "nid": -1222914169,
                                     "strtype": "_style/Text_Color",
                                     "intarray": [
-                                      15,
-                                      209,
-                                      14,
+                                      255,
+                                      0,
+                                      0,
                                       255
                                     ],
                                     "InheritedType": 7
@@ -4396,7 +4396,7 @@
                         "strtype": "OBJECT/Position",
                         "intarray": [
                           1,
-                          8
+                          24
                         ],
                         "InheritedType": 7
                       },
@@ -8393,7 +8393,7 @@
     "theme_color2": 0,
     "exportFolderPath": "D:\\KMUNTB_LEARNING\\KMUTNB_LEARN_T2.1\\SEMINAR\\Code\\Project-IR-eye-protection\\GUI\\Boxcon\\./libraries/ui/src",
     "projectExportFolderPath": "D:\\KMUNTB_LEARNING\\KMUTNB_LEARN_T2.1\\SEMINAR\\Code\\Project-IR-eye-protection\\GUI\\Boxcon",
-    "backup_cnt": 24,
+    "backup_cnt": 45,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.6",
     "callfuncsexport": null,

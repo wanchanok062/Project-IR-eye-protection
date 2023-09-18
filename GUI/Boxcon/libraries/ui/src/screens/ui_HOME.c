@@ -46,7 +46,7 @@ void ui_HOME_screen_init(void)
     lv_obj_set_x(ui_Label1, 0);
     lv_obj_set_y(ui_Label1, 5);
     lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label1, "Computer Education");
+    lv_label_set_text(ui_Label1, "Please Connect Wifi");
     lv_obj_set_style_text_color(ui_Label1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label1, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -120,17 +120,15 @@ void ui_HOME_screen_init(void)
     lv_obj_set_style_bg_color(ui_BarState, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_BarState, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-
     lv_obj_set_style_bg_color(ui_BarState, lv_color_hex(0xFF0000), LV_PART_INDICATOR | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_BarState, 669, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_bar_set_value(ui_BarState, 0, LV_ANIM_OFF); 
 
     ui_setStatus = lv_label_create(ui_Panel4);
     lv_obj_set_width(ui_setStatus, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_setStatus, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_setStatus, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_setStatus, "ST");
-    lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0x6495ED), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_text(ui_setStatus, "OFF");
+    lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_setStatus, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_setStatus, &ui_font_Kanit, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_color(ui_setStatus, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -192,7 +190,7 @@ void ui_HOME_screen_init(void)
     lv_obj_set_width(ui_setTime, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_setTime, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_setTime, 1);
-    lv_obj_set_y(ui_setTime, 8);
+    lv_obj_set_y(ui_setTime, 24);
     lv_obj_set_align(ui_setTime, LV_ALIGN_CENTER);
     lv_label_set_text(ui_setTime, "00:00");
     lv_obj_set_style_text_color(ui_setTime, lv_color_hex(0x4E4E4E), LV_PART_MAIN | LV_STATE_DEFAULT);

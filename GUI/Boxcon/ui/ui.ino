@@ -1,15 +1,59 @@
-#include <lvgl.h>
+// import library
+#include <lvgl.h>  //this library used for create display TFT
 #include <TFT_eSPI.h>
 #include <ui.h>
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <IRutils.h>
+#include <WiFiManager.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include "time.h"
 
 const uint16_t kRecvPin = 14;  // GPIO 4 (D2) สำหรับรับสัญญาณ IR
+const int buttonPin = 22;      // ตั้งค่าขาของปุ่มที่คุณใช้
 #define Ralay1 21
 IRrecv irrecv(kRecvPin);
 int stateCountsown = 0;
 int counDown = 15;
+bool buttonPressed = false;  //button for reset wifi manager
+WiFiManager wm;
+
+
+// -------- Time get ---------
+HTTPClient http;
+int httpCode;
+String payload;
+
+const char *ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 25200;
+const int daylightOffset_sec = 0;
+
+struct tm previousTimeinfo;  // Stroe Time Befor
+bool timeChanged = false;
+char timeth[20];
+//-------- end ---------------
+
+//------------- function time get -------------
+void printLocalTime() {
+  delay(1000);
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  if (timeinfo.tm_hour != previousTimeinfo.tm_hour || timeinfo.tm_min != previousTimeinfo.tm_min) {
+    timeChanged = true;
+    previousTimeinfo = timeinfo;
+  } else {
+    timeChanged = false;
+  }
+  if (timeChanged) {
+    snprintf(timeth, sizeof(timeth), "%02d:%02d\n", timeinfo.tm_hour, timeinfo.tm_min);
+  }
+}
+// ------------- end -------------
 
 unsigned long lastIRTime = 0;
 const unsigned long relayDelay = 15000;
@@ -46,31 +90,16 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
   lv_disp_flush_ready(disp);
 }
 
-/*Read the touchpad*/
-void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data) {
-  uint16_t touchX = 0, touchY = 0;
 
-  bool touched = false;  //tft.getTouch( &touchX, &touchY, 600 );
 
-  if (!touched) {
-    data->state = LV_INDEV_STATE_REL;
-  } else {
-    data->state = LV_INDEV_STATE_PR;
-
-    /*Set the coordinates*/
-    data->point.x = touchX;
-    data->point.y = touchY;
-
-    Serial.print("Data x ");
-    Serial.println(touchX);
-
-    Serial.print("Data y ");
-    Serial.println(touchY);
-  }
-}
 
 void setup() {
+  /*Initialize the display*/
+  static lv_disp_drv_t disp_drv;
+  lv_disp_drv_init(&disp_drv);
+  
   Serial.begin(115200); /* prepare for possible serial debug */
+  pinMode(buttonPin, INPUT_PULLUP);
   irrecv.enableIRIn();  // เปิดใช้งานรับสัญญาณ IR
   pinMode(Ralay1, OUTPUT);
   String LVGL_Arduino = "Hello Arduino! ";
@@ -90,9 +119,6 @@ void setup() {
 
   lv_disp_draw_buf_init(&draw_buf, buf, NULL, screenWidth * screenHeight / 10);
 
-  /*Initialize the display*/
-  static lv_disp_drv_t disp_drv;
-  lv_disp_drv_init(&disp_drv);
   /*Change the following line to your display resolution*/
   disp_drv.hor_res = screenWidth;
   disp_drv.ver_res = screenHeight;
@@ -104,17 +130,29 @@ void setup() {
   static lv_indev_drv_t indev_drv;
   lv_indev_drv_init(&indev_drv);
   indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = my_touchpad_read;
   lv_indev_drv_register(&indev_drv);
+  //----- wifi manager -----
+  bool res;
+  res = wm.autoConnect("CED_Connect", "CED_config-01");
 
+  if (!res) {
+    Serial.println("Failed to connect");
+  } else {
+    Serial.println("Connected successfully");
+  }
+  // ----- end wifi manager setup -----
+
+  // ----- get the time ------
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
+  // ----- end get the time -----
 
   ui_init();
-
   Serial.println("Setup done");
 }
 
 void loop() {
-
+  lv_label_set_text(ui_Label1, String(WiFi.SSID()).c_str());
   decode_results results;
   if (irrecv.decode(&results)) {  // รับสัญญาณ IR และถอดรหัส
 
@@ -123,6 +161,7 @@ void loop() {
       Serial.println("Relay ON");
       lv_label_set_text(ui_setStatus, "ON");
       lv_obj_set_style_text_color(ui_setStatus, lv_color_hex(0x0FD10E), LV_PART_MAIN | LV_STATE_DEFAULT);
+      lv_bar_set_value(ui_BarState, 0, LV_ANIM_OFF);
       lastIRTime = millis();
       Serial.println(lastIRTime);
       stateCountsown = 1;
@@ -160,7 +199,20 @@ void loop() {
       }
     }
   }
-
+  // ----- button wifi manager -----
+  if (digitalRead(buttonPin) == 0) {  // ปุ่มถูกกด
+    buttonPressed = true;
+  } else {                // ปุ่มไม่ถูกกด
+    if (buttonPressed) {  // ถ้าปุ่มถูกกดมาก่อนหน้า
+      wm.resetSettings();
+      Serial.println("WiFi credentials reset. Restarting...");
+      ESP.restart();
+    }
+    buttonPressed = false;  // รีเซ็ตสถานะปุ่ม
+  }
+  // ----- end button wifi manager -----
+  lv_label_set_text(ui_setTime, timeth);
+  printLocalTime();
   lv_timer_handler(); /* let the GUI do its work */
   delay(5);
 }
