@@ -1,25 +1,28 @@
-// import library
-#include <lvgl.h>  //this library used for create display TFT
-#include <TFT_eSPI.h>
-#include <ui.h>
-#include <IRremoteESP8266.h>
-#include <IRrecv.h>
-#include <IRutils.h>
-#include <WiFiManager.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-#include "time.h"
+// ----- import library -----
+#include <lvgl.h>  //this library used for create display TFT.
+#include <TFT_eSPI.h> //this library for PSI Port.
+#include <ui.h> //this library used for create display GUI.
+#include <IRremoteESP8266.h> //this library used for recive IR.
+#include <IRrecv.h> //this library used for recive IR.
+#include <IRutils.h> //this library used for recive IR.
+#include <WiFiManager.h> //this library used for manage WIFI.
+#include <WiFi.h> //this library used for manage WIFI.
+#include <HTTPClient.h>// this library used for HTTP protocol.
+#include <ArduinoJson.h>// this library used for Json.
+#include "time.h"// this library used for time.
 
+//----- variable -----
+
+//----- IR -----
 const uint16_t kRecvPin = 14;  // GPIO 4 (D2) สำหรับรับสัญญาณ IR
-const int buttonPin = 22;      // ตั้งค่าขาของปุ่มที่คุณใช้
 #define Ralay1 21
 IRrecv irrecv(kRecvPin);
+//----- End IR -----
 int stateCountsown = 0;
 int counDown = 15;
 bool buttonPressed = false;  //button for reset wifi manager
 WiFiManager wm;
-
+const int buttonPin = 22;      // ตั้งค่าขาของปุ่มที่คุณใช้
 
 // -------- Time get ---------
 HTTPClient http;
