@@ -8,7 +8,7 @@
 #include <WiFi.h>             //this library used for manage WIFI.
 #include <HTTPClient.h>       // this library used for HTTP protocol.
 #include <ArduinoJson.h>      // this library used for Json.
-#include "time.h"             // this library used for time.
+#include "time.h"             // this library used for time
 #define TFT_GREY 0x5AEB
 
 //----- IR -----
